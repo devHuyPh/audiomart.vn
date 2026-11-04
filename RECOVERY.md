@@ -46,3 +46,12 @@ Thư mục `/home/huy/audiomart-recovery/` chứa:
 - `evidence/`: báo cáo, bản file trước khi sửa và kết quả kiểm tra. Chưa có thao tác ghi lên hosting.
 
 Khi triển khai: sao lưu hosting hiện tại, chép các file trong `overlay/` vào đúng website, giữ/điều chỉnh kết nối database của hosting, rồi áp dụng SQL bật plugin. Chỉ import toàn bộ database phục hồi nếu chủ đích thay database bằng snapshot này. Xóa cache hosting/CDN sau khi đổi source. Không đặt file SQL/ZIP hoặc thư mục bằng chứng trong webroot.
+
+
+## Xóa vĩnh viễn bài spam
+
+Theo yêu cầu cuối của chủ website, đã xóa vĩnh viễn 1.336 bài spam xác định từ database, thay cho cách ly. Dùng `wp_delete_post(..., true)` để xử lý cả revision, metadata, bình luận và quan hệ taxonomy liên quan. Kiểm tra các ID đã xác định: không còn bản ghi bài, revision, metadata, bình luận hoặc quan hệ taxonomy. Giữ 148 bài âm thanh công khai, 1.429 sản phẩm công khai và 156 đơn hàng. Database SQL gốc người dùng cung cấp không bị sửa.
+
+Đã sửa phân trang tin tức và kiểm tra trước đó đủ 148 bài khác nhau qua 8 trang. Bài spam đã xóa trả 404 qua REST API công khai. Không kết luận đã kiểm toán toàn bộ nguyên nhân chèn spam.
+
+Database bàn giao đã loại bỏ các bài này. Full code nằm trong `audiomart-full-code.zip`, giải nén trực tiếp vào thư mục website. Gói full chỉ đóng các file core từ danh sách chính thức, theme audiotheme, 8 plugin đang dùng và dữ liệu media/ngôn ngữ; không kèm plugin/theme không dùng, Git, cache hoặc backup. Thông tin database trong wp-config.php cần khớp hosting. Khi thay toàn bộ site, triển khai vào thư mục sạch để file cũ không còn sót; import database phục hồi vào database trống. Không upload file SQL/ZIP vào thư mục công khai rồi để lại đó.

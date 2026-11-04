@@ -26,21 +26,14 @@
                     <?php 
                         $page = (get_query_var('paged')) ? get_query_var('paged') : 1;
                         $args = array(
-                            'paged'            => $page,
-                        	'offset'           => 0,
-                        	'category'         => '',
-                        	'category_name'    => '',
-                        	'orderby'          => 'post_date',
-                        	'order'            => 'DESC',
-                        	'include'          => '',
-                        	'exclude'          => '',
-                        	'meta_key'         => '',
-                        	'meta_value'       => '',
-                        	'post_type'        => 'post',
-                        	'post_mime_type'   => '',
-                        	'post_parent'      => '',
-                        	'post_status'      => 'publish',
-                        	'suppress_filters' => true ); 
+                            'paged' => max( 1, (int) $page ),
+                            'posts_per_page' => (int) get_option( 'posts_per_page', 20 ),
+                            'ignore_sticky_posts' => true,
+                            'orderby' => 'post_date',
+                            'order' => 'DESC',
+                            'post_type' => 'post',
+                            'post_status' => 'publish',
+                        ); 
                     ?>
                    
                     <?php
@@ -64,11 +57,7 @@
                         </article>
                     <?php 
                         }
-                        $args = array(
-                          'base' => add_query_arg( 'paged', '%#%' ),
-                          'total' => $my_query->max_num_pages,
-                          'current' => $page
-                        );
+                        wp_reset_postdata();
                         $big = 999999999; // need an unlikely integer
                         ?>
                         <div class="paginations">
