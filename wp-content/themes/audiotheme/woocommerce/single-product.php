@@ -39,7 +39,7 @@
                 						echo '<a href="' . get_term_link( $ancestor->slug, 'product_cat' ) . '">' . $ancestor->name . '</a>' . '&nbsp; » &nbsp';
                 				}
                 
-                				echo $before . '<a href="' . get_term_link( $main_term->slug, 'product_cat' ) . '">' . $main_term->name . '</a>' . '&nbsp; » &nbsp';
+                				echo  '<a href="' . get_term_link( $main_term->slug, 'product_cat' ) . '">' . $main_term->name . '</a>' . '&nbsp; » &nbsp';
                 
                 			}
                 

@@ -5,6 +5,8 @@ Plugin Name:          Taxonomy Images
 Plugin URI:           https://github.com/benhuson/Taxonomy-Images
 Description:          Associate images from your media library to categories, tags and custom taxonomies.
 Version:              1.0
+Requires at least:    4.4
+Requires PHP:         5.3
 Author:               Michael Fields, Ben Huson
 Author URI:           https://github.com/benhuson
 License:              GNU General Public License v2 or later

@@ -15,7 +15,7 @@
         <div class="img-404">404</div>
         <h2>XIN LỖI, TRANG BẠN TÌM KIẾM KHÔNG CÒN TỒN TẠI</h2>
         <p>Có thể URL bị hỏng hoặc đã được gỡ xuống</p>
-        <p>Bạn có thể trở về trang chủ để xem thêm:<a style="color:#FF3300;" href="http://audiomart.vn/" rel="nofollow">Trang Chủ</a></p>
+        <p>Bạn có thể trở về trang chủ để xem thêm:<a style="color:#FF3300;" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="nofollow">Trang Chủ</a></p>
       </div>
       <!--mess-404-->
     </div>

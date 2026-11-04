@@ -2,8 +2,8 @@
 Contributors:         mfields, husobj, jamiemchale
 Donate link:          https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QSYTTQZBRKQVE
 Tags:                 taxonomy, tag, category, term, image, upload, media
-Requires at least:    3.5
-Tested up to:         5.2.1
+Requires at least:    4.4
+Tested up to:         6.4.3
 Stable tag:           1.0
 License:              GPLv2 or later
 License URI:          http://www.gnu.org/licenses/gpl-2.0.html

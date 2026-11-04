@@ -23,5 +23,5 @@ echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 	),
 $product );
 }
-echo '<a href="'.get_permalink($product->ID).'" class="info">Chi tiết</a>';
+echo '<a href="'.get_permalink($product->id).'" class="info">Chi tiết</a>';
 echo '</div>';

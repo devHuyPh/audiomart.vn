@@ -72,7 +72,7 @@
     </div>
   </div>
    <div class="widget wds-testimonial">
-   <p style="padding-bottom:10px;"><a href="https://audiomart.vn/san-pham/am-thanh-hi-fi/loa-hi-fi"><img src="https://audiomart.vn/wp-content/uploads/2019/08/Loa-hifi.jpg" width="280" alt="Loa HIfi" /></a></p>
-   <p style="padding-bottom:10px;"><a href="https://audiomart.vn/san-pham/am-thanh-hi-end"><img src="https://audiomart.vn/wp-content/uploads/2019/08/LoaHiend-1.jpg" width="280" alt="loa hiend" /></a></p>
+   <p style="padding-bottom:10px;"><a href="<?php echo esc_url( home_url( '/san-pham/am-thanh-hi-fi/loa-hi-fi' ) ); ?>"><img src="<?php echo esc_url( content_url( '/uploads/2019/08/Loa-hifi.jpg' ) ); ?>" width="280" alt="Loa HIfi" /></a></p>
+   <p style="padding-bottom:10px;"><a href="<?php echo esc_url( home_url( '/san-pham/am-thanh-hi-end' ) ); ?>"><img src="<?php echo esc_url( content_url( '/uploads/2019/08/LoaHiend-1.jpg' ) ); ?>" width="280" alt="loa hiend" /></a></p>
       </div>
   </div>

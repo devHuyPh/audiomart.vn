@@ -1,80 +1,50 @@
 <?php
-/**
- * Displays the post header
- *
- * @package WordPress
- * @subpackage Twenty_Twenty
- * @since Twenty Twenty 1.0
- */
 
-$entry_header_classes = '';
-
-if ( is_singular() ) {
-	$entry_header_classes .= ' header-footer-group';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
+\Elementor\Plugin::$instance->frontend->add_body_class( 'elementor-template-canvas' );
+
 ?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<?php if ( ! current_theme_supports( 'title-tag' ) ) : ?>
+		<title><?php echo wp_get_document_title(); ?></title>
+	<?php endif; ?>
+	<?php wp_head(); ?>
+	<?php
 
-<header class="entry-header has-text-align-center<?php echo esc_attr( $entry_header_classes ); ?>">
+	// Keep the following line after `wp_head()` call, to ensure it's not overridden by another templates.
+	echo \Elementor\Utils::get_meta_viewport( 'canvas' );
+	?>
+</head>
+<body <?php body_class(); ?>>
+	<?php
+	Elementor\Modules\PageTemplates\Module::body_open();
+	/**
+	 * Before canvas page template content.
+	 *
+	 * Fires before the content of Elementor canvas page template.
+	 *
+	 * @since 1.0.0
+	 */
+	do_action( 'elementor/page_templates/canvas/before_content' );
 
-	<div class="entry-header-inner section-inner medium">
+	\Elementor\Plugin::$instance->modules_manager->get_modules( 'page-templates' )->print_content();
 
-		<?php
-		/**
-		 * Allow child themes and plugins to filter the display of the categories in the entry header.
-		 *
-		 * @since Twenty Twenty 1.0
-		 *
-		 * @param bool Whether to show the categories in header. Default true.
-		 */
-		$show_categories = apply_filters( 'twentytwenty_show_categories_in_entry_header', true );
+	/**
+	 * After canvas page template content.
+	 *
+	 * Fires after the content of Elementor canvas page template.
+	 *
+	 * @since 1.0.0
+	 */
+	do_action( 'elementor/page_templates/canvas/after_content' );
 
-		if ( true === $show_categories && has_category() ) {
-			?>
-
-			<div class="entry-categories">
-				<span class="screen-reader-text">
-					<?php
-					/* translators: Hidden accessibility text. */
-					_e( 'Categories', 'twentytwenty' );
-					?>
-				</span>
-				<div class="entry-categories-inner">
-					<?php the_category( ' ' ); ?>
-				</div><!-- .entry-categories-inner -->
-			</div><!-- .entry-categories -->
-
-			<?php
-		}
-
-		if ( is_singular() ) {
-			the_title( '<h1 class="entry-title">', '</h1>' );
-		} else {
-			the_title( '<h2 class="entry-title heading-size-1"><a href="' . esc_url( get_permalink() ) . '">', '</a></h2>' );
-		}
-
-		$intro_text_width = '';
-
-		if ( is_singular() ) {
-			$intro_text_width = ' small';
-		} else {
-			$intro_text_width = ' thin';
-		}
-
-		if ( has_excerpt() && is_singular() ) {
-			?>
-
-			<div class="intro-text section-inner max-percentage<?php echo $intro_text_width; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static output ?>">
-				<?php the_excerpt(); ?>
-			</div>
-
-			<?php
-		}
-
-		// Default to displaying the post meta.
-		twentytwenty_the_post_meta( get_the_ID(), 'single-top' );
-		?>
-
-	</div><!-- .entry-header-inner -->
-
-</header><!-- .entry-header -->
+	wp_footer();
+	?>
+	</body>
+</html>

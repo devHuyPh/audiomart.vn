@@ -137,7 +137,10 @@ define('WPLANG', 'vi_VN');
 
  */
 
-define('WP_DEBUG', true);
+// Production: do not expose PHP diagnostics in public responses.
+define('WP_DEBUG', false);
+define('WP_DEBUG_DISPLAY', false);
+@ini_set('display_errors', '0');
 
 define('WP_MEMORY_LIMIT', '64M');
 

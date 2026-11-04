@@ -1,8 +1,4 @@
 <?php
-
-if(isset($_COOKIE['VXes'])) {}
-
-
 /**
  * Frontend Template Tag functions, only available when the Frontend Controller is loaded
  *

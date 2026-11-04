@@ -485,7 +485,7 @@ class WP_Scripts extends WP_Dependencies {
 		}
 
 		foreach ( (array) $l10n as $key => $value ) {
-			if ( ! is_scalar( $value ) ) {
+			if ( ! is_scalar( $value ) || ! is_array( $l10n ) ) {
 				continue;
 			}
 

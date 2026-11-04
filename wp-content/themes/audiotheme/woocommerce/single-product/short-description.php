@@ -10,21 +10,22 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $post, $product;
-$cat_count = sizeof( get_the_terms( $post->ID, 'product_cat' ) );
+$categories = get_the_terms( $post->ID, 'product_cat' );
+$cat_count = is_array( $categories ) ? count( $categories ) : 0;
 ?>
 <?php if ( $post->post_excerpt ) : ?>
     <?php //print_r($post);die; ?>
     <div itemprop="description" class="description">
-    	<div class="des-label">Tóm tắt: &nbsp; </div><div class="des-content"><?php echo $post->post_content;//echo apply_filters( 'woocommerce_short_description', $post->post_excerpt ) ?></div>
+    	<div class="des-label">Tóm tắt: &nbsp; </div><div class="des-content"><?php echo apply_filters( 'woocommerce_short_description', $post->post_excerpt ) ?></div>
     </div>
 <?php endif; ?>
 <div class="thuong-hieu">
     <span class="strong label-th">Thương hiệu: </span>
     <?php 
-        $trade = get_the_terms( $post->id, 'trademark' ); 
+        $trade = get_the_terms( $post->ID, 'trademark' ); 
         if(is_array($trade)) {
             $name = end($trade); 
-            echo '<span class="th-content">'. $name->name .'</span>';
+            echo '<span class="th-content">'. esc_html( $name->name ) .'</span>';
         }
         
     ?>
@@ -32,9 +33,9 @@ $cat_count = sizeof( get_the_terms( $post->ID, 'product_cat' ) );
 <?php if ( $cat_count > 0 ) : ?>
     <div class="kind-prod">
         <span class="strong label-kind">Loại sản phẩm: </span>
-        <?php $cat = get_the_terms( $post->ID, 'product_cat' ) ?>
+        <?php $cat = $categories ?>
         <?php $subcat = end($cat); ?>
-        <span class="cat-content"><?php echo $subcat->name; ?></span>
+        <span class="cat-content"><?php echo esc_html( $subcat->name ); ?></span>
     
     </div>
 <?php endif; ?>

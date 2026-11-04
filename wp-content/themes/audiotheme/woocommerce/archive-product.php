@@ -38,7 +38,7 @@
                         <div class="icon-breakcrum"></div>
                     </div>
 		<div class="description-archive">
-			<?php echo category_description( $category_id ); ?>
+			<?php echo term_description( get_queried_object_id(), 'product_cat' ); ?>
 		</div>
                     <?php //list product ?>
 			<div class="block-adv-cat">

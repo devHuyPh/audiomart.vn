@@ -1,195 +1,297 @@
 <?php
-/**
- * Copyright (C) 2014-2025 ServMask Inc.
+
+/*! @mainpage
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * HTML Purifier is an HTML filter that will take an arbitrary snippet of
+ * HTML and rigorously test, validate and filter it into a version that
+ * is safe for output onto webpages. It achieves this by:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  -# Lexing (parsing into tokens) the document,
+ *  -# Executing various strategies on the tokens:
+ *      -# Removing all elements not in the whitelist,
+ *      -# Making the tokens well-formed,
+ *      -# Fixing the nesting of the nodes, and
+ *      -# Validating attributes of the nodes; and
+ *  -# Generating HTML from the purified tokens.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Attribution: This code is part of the All-in-One WP Migration plugin, developed by
- *
- * ███████╗███████╗██████╗ ██╗   ██╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
- * ██╔════╝██╔════╝██╔══██╗██║   ██║████╗ ████║██╔══██╗██╔════╝██║ ██╔╝
- * ███████╗█████╗  ██████╔╝██║   ██║██╔████╔██║███████║███████╗█████╔╝
- * ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██║╚██╔╝██║██╔══██║╚════██║██╔═██╗
- * ███████║███████╗██║  ██║ ╚████╔╝ ██║ ╚═╝ ██║██║  ██║███████║██║  ██╗
- * ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+ * However, most users will only need to interface with the HTMLPurifier
+ * and HTMLPurifier_Config.
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die( 'Kangaroos cannot jump here' );
+/*
+    HTML Purifier 4.13.0 - Standards Compliant HTML Filtering
+    Copyright (C) 2006-2008 Edward Z. Yang
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Facade that coordinates HTML Purifier's subsystems in order to purify HTML.
+ *
+ * @note There are several points in which configuration can be specified
+ *       for HTML Purifier.  The precedence of these (from lowest to
+ *       highest) is as follows:
+ *          -# Instance: new HTMLPurifier($config)
+ *          -# Invocation: purify($html, $config)
+ *       These configurations are entirely independent of each other and
+ *       are *not* merged (this behavior may change in the future).
+ *
+ * @todo We need an easier way to inject strategies using the configuration
+ *       object.
+ */
+class HTMLPurifier
+{
+
+    /**
+     * Version of HTML Purifier.
+     * @type string
+     */
+    public $version = '4.13.0';
+
+    /**
+     * Constant with version of HTML Purifier.
+     */
+    const VERSION = '4.13.0';
+
+    /**
+     * Global configuration object.
+     * @type HTMLPurifier_Config
+     */
+    public $config;
+
+    /**
+     * Array of extra filter objects to run on HTML,
+     * for backwards compatibility.
+     * @type HTMLPurifier_Filter[]
+     */
+    private $filters = array();
+
+    /**
+     * Single instance of HTML Purifier.
+     * @type HTMLPurifier
+     */
+    private static $instance;
+
+    /**
+     * @type HTMLPurifier_Strategy_Core
+     */
+    protected $strategy;
+
+    /**
+     * @type HTMLPurifier_Generator
+     */
+    protected $generator;
+
+    /**
+     * Resultant context of last run purification.
+     * Is an array of contexts if the last called method was purifyArray().
+     * @type HTMLPurifier_Context
+     */
+    public $context;
+
+    /**
+     * Initializes the purifier.
+     *
+     * @param HTMLPurifier_Config|mixed $config Optional HTMLPurifier_Config object
+     *                for all instances of the purifier, if omitted, a default
+     *                configuration is supplied (which can be overridden on a
+     *                per-use basis).
+     *                The parameter can also be any type that
+     *                HTMLPurifier_Config::create() supports.
+     */
+    public function __construct($config = null)
+    {
+        $this->config = HTMLPurifier_Config::create($config);
+        $this->strategy = new HTMLPurifier_Strategy_Core();
+    }
+
+    /**
+     * Adds a filter to process the output. First come first serve
+     *
+     * @param HTMLPurifier_Filter $filter HTMLPurifier_Filter object
+     */
+    public function addFilter($filter)
+    {
+        trigger_error(
+            'HTMLPurifier->addFilter() is deprecated, use configuration directives' .
+            ' in the Filter namespace or Filter.Custom',
+            E_USER_WARNING
+        );
+        $this->filters[] = $filter;
+    }
+
+    /**
+     * Filters an HTML snippet/document to be XSS-free and standards-compliant.
+     *
+     * @param string $html String of HTML to purify
+     * @param HTMLPurifier_Config $config Config object for this operation,
+     *                if omitted, defaults to the config object specified during this
+     *                object's construction. The parameter can also be any type
+     *                that HTMLPurifier_Config::create() supports.
+     *
+     * @return string Purified HTML
+     */
+    public function purify($html, $config = null)
+    {
+        // :TODO: make the config merge in, instead of replace
+        $config = $config ? HTMLPurifier_Config::create($config) : $this->config;
+
+        // implementation is partially environment dependant, partially
+        // configuration dependant
+        $lexer = HTMLPurifier_Lexer::create($config);
+
+        $context = new HTMLPurifier_Context();
+
+        // setup HTML generator
+        $this->generator = new HTMLPurifier_Generator($config, $context);
+        $context->register('Generator', $this->generator);
+
+        // set up global context variables
+        if ($config->get('Core.CollectErrors')) {
+            // may get moved out if other facilities use it
+            $language_factory = HTMLPurifier_LanguageFactory::instance();
+            $language = $language_factory->create($config, $context);
+            $context->register('Locale', $language);
+
+            $error_collector = new HTMLPurifier_ErrorCollector($context);
+            $context->register('ErrorCollector', $error_collector);
+        }
+
+        // setup id_accumulator context, necessary due to the fact that
+        // AttrValidator can be called from many places
+        $id_accumulator = HTMLPurifier_IDAccumulator::build($config, $context);
+        $context->register('IDAccumulator', $id_accumulator);
+
+        $html = HTMLPurifier_Encoder::convertToUTF8($html, $config, $context);
+
+        // setup filters
+        $filter_flags = $config->getBatch('Filter');
+        $custom_filters = $filter_flags['Custom'];
+        unset($filter_flags['Custom']);
+        $filters = array();
+        foreach ($filter_flags as $filter => $flag) {
+            if (!$flag) {
+                continue;
+            }
+            if (strpos($filter, '.') !== false) {
+                continue;
+            }
+            $class = "HTMLPurifier_Filter_$filter";
+            $filters[] = new $class;
+        }
+        foreach ($custom_filters as $filter) {
+            // maybe "HTMLPurifier_Filter_$filter", but be consistent with AutoFormat
+            $filters[] = $filter;
+        }
+        $filters = array_merge($filters, $this->filters);
+        // maybe prepare(), but later
+
+        for ($i = 0, $filter_size = count($filters); $i < $filter_size; $i++) {
+            $html = $filters[$i]->preFilter($html, $config, $context);
+        }
+
+        // purified HTML
+        $html =
+            $this->generator->generateFromTokens(
+                // list of tokens
+                $this->strategy->execute(
+                    // list of un-purified tokens
+                    $lexer->tokenizeHTML(
+                        // un-purified HTML
+                        $html,
+                        $config,
+                        $context
+                    ),
+                    $config,
+                    $context
+                )
+            );
+
+        for ($i = $filter_size - 1; $i >= 0; $i--) {
+            $html = $filters[$i]->postFilter($html, $config, $context);
+        }
+
+        $html = HTMLPurifier_Encoder::convertFromUTF8($html, $config, $context);
+        $this->context =& $context;
+        return $html;
+    }
+
+    /**
+     * Filters an array of HTML snippets
+     *
+     * @param string[] $array_of_html Array of html snippets
+     * @param HTMLPurifier_Config $config Optional config object for this operation.
+     *                See HTMLPurifier::purify() for more details.
+     *
+     * @return string[] Array of purified HTML
+     */
+    public function purifyArray($array_of_html, $config = null)
+    {
+        $context_array = array();
+        $array = array();
+        foreach($array_of_html as $key=>$value){
+            if (is_array($value)) {
+                $array[$key] = $this->purifyArray($value, $config);
+            } else {
+                $array[$key] = $this->purify($value, $config);
+            }
+            $context_array[$key] = $this->context;
+        }
+        $this->context = $context_array;
+        return $array;
+    }
+
+    /**
+     * Singleton for enforcing just one HTML Purifier in your system
+     *
+     * @param HTMLPurifier|HTMLPurifier_Config $prototype Optional prototype
+     *                   HTMLPurifier instance to overload singleton with,
+     *                   or HTMLPurifier_Config instance to configure the
+     *                   generated version with.
+     *
+     * @return HTMLPurifier
+     */
+    public static function instance($prototype = null)
+    {
+        if (!self::$instance || $prototype) {
+            if ($prototype instanceof HTMLPurifier) {
+                self::$instance = $prototype;
+            } elseif ($prototype) {
+                self::$instance = new HTMLPurifier($prototype);
+            } else {
+                self::$instance = new HTMLPurifier();
+            }
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Singleton for enforcing just one HTML Purifier in your system
+     *
+     * @param HTMLPurifier|HTMLPurifier_Config $prototype Optional prototype
+     *                   HTMLPurifier instance to overload singleton with,
+     *                   or HTMLPurifier_Config instance to configure the
+     *                   generated version with.
+     *
+     * @return HTMLPurifier
+     * @note Backwards compatibility, see instance()
+     */
+    public static function getInstance($prototype = null)
+    {
+        return HTMLPurifier::instance($prototype);
+    }
 }
 
-class Ai1wm_Export_Content {
-
-	public static function execute( $params ) {
-
-		// Set archive bytes offset
-		if ( isset( $params['archive_bytes_offset'] ) ) {
-			$archive_bytes_offset = (int) $params['archive_bytes_offset'];
-		} else {
-			$archive_bytes_offset = ai1wm_archive_bytes( $params );
-		}
-
-		// Set file bytes offset
-		if ( isset( $params['file_bytes_offset'] ) ) {
-			$file_bytes_offset = (int) $params['file_bytes_offset'];
-		} else {
-			$file_bytes_offset = 0;
-		}
-
-		// Set content bytes offset
-		if ( isset( $params['content_bytes_offset'] ) ) {
-			$content_bytes_offset = (int) $params['content_bytes_offset'];
-		} else {
-			$content_bytes_offset = 0;
-		}
-
-		// Get processed files size
-		if ( isset( $params['processed_files_size'] ) ) {
-			$processed_files_size = (int) $params['processed_files_size'];
-		} else {
-			$processed_files_size = 0;
-		}
-
-		// Get total content files size
-		if ( isset( $params['total_content_files_size'] ) ) {
-			$total_content_files_size = (int) $params['total_content_files_size'];
-		} else {
-			$total_content_files_size = 1;
-		}
-
-		// Get total content files count
-		if ( isset( $params['total_content_files_count'] ) ) {
-			$total_content_files_count = (int) $params['total_content_files_count'];
-		} else {
-			$total_content_files_count = 1;
-		}
-
-		// What percent of files have we processed?
-		$progress = (int) min( ( $processed_files_size / $total_content_files_size ) * 100, 100 );
-
-		// Set progress
-		Ai1wm_Status::info( sprintf( __( 'Archiving %d content files...<br />%d%% complete', AI1WM_PLUGIN_NAME ), $total_content_files_count, $progress ) );
-
-		// Flag to hold if file data has been processed
-		$completed = true;
-
-		// Start time
-		$start = microtime( true );
-
-		// Get content list file
-		$content_list = ai1wm_open( ai1wm_content_list_path( $params ), 'r' );
-
-		// Set the file pointer at the current index
-		if ( fseek( $content_list, $content_bytes_offset ) !== -1 ) {
-
-			// Open the archive file for writing
-			$archive = new Ai1wm_Compressor( ai1wm_archive_path( $params ) );
-
-			// Set the file pointer to the one that we have saved
-			$archive->set_file_pointer( $archive_bytes_offset );
-
-			// Loop over files
-			while ( list( $file_abspath, $file_relpath, $file_size, $file_mtime ) = ai1wm_getcsv( $content_list ) ) {
-				$file_bytes_written = 0;
-
-				// Add file to archive
-				if ( ( $completed = $archive->add_file( $file_abspath, $file_relpath, $file_bytes_written, $file_bytes_offset ) ) ) {
-					$file_bytes_offset = 0;
-
-					// Get content bytes offset
-					$content_bytes_offset = ftell( $content_list );
-				}
-
-				// Increment processed files size
-				$processed_files_size += $file_bytes_written;
-
-				// What percent of files have we processed?
-				$progress = (int) min( ( $processed_files_size / $total_content_files_size ) * 100, 100 );
-
-				// Set progress
-				Ai1wm_Status::info( sprintf( __( 'Archiving %d content files...<br />%d%% complete', AI1WM_PLUGIN_NAME ), $total_content_files_count, $progress ) );
-
-				// More than 10 seconds have passed, break and do another request
-				if ( ( $timeout = apply_filters( 'ai1wm_completed_timeout', 10 ) ) ) {
-					if ( ( microtime( true ) - $start ) > $timeout ) {
-						$completed = false;
-						break;
-					}
-				}
-			}
-
-			// Get archive bytes offset
-			$archive_bytes_offset = $archive->get_file_pointer();
-
-			// Truncate the archive file
-			$archive->truncate();
-
-			// Close the archive file
-			$archive->close();
-		}
-
-		// End of the content list?
-		if ( feof( $content_list ) ) {
-
-			// Unset archive bytes offset
-			unset( $params['archive_bytes_offset'] );
-
-			// Unset file bytes offset
-			unset( $params['file_bytes_offset'] );
-
-			// Unset content bytes offset
-			unset( $params['content_bytes_offset'] );
-
-			// Unset processed files size
-			unset( $params['processed_files_size'] );
-
-			// Unset total content files size
-			unset( $params['total_content_files_size'] );
-
-			// Unset total content files count
-			unset( $params['total_content_files_count'] );
-
-			// Unset completed flag
-			unset( $params['completed'] );
-
-		} else {
-
-			// Set archive bytes offset
-			$params['archive_bytes_offset'] = $archive_bytes_offset;
-
-			// Set file bytes offset
-			$params['file_bytes_offset'] = $file_bytes_offset;
-
-			// Set content bytes offset
-			$params['content_bytes_offset'] = $content_bytes_offset;
-
-			// Set processed files size
-			$params['processed_files_size'] = $processed_files_size;
-
-			// Set total content files size
-			$params['total_content_files_size'] = $total_content_files_size;
-
-			// Set total content files count
-			$params['total_content_files_count'] = $total_content_files_count;
-
-			// Set completed flag
-			$params['completed'] = $completed;
-		}
-
-		// Close the content list file
-		ai1wm_close( $content_list );
-
-		return $params;
-	}
-}
+// vim: et sw=4 sts=4

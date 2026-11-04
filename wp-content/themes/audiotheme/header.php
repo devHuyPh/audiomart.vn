@@ -57,9 +57,9 @@ src="https://www.facebook.com/tr?id=892377317500381&ev=PageView&noscript=1"
 <link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/css/bootstrap.min2.css" type='text/css' media='all'>
 <link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/css/bootstrap.min.css" type='text/css' media='all'>
 <link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>">
-<link rel="stylesheet"  type="text/css" href="http://fonts.googleapis.com/css?family=SourceSansPro-Semibold" />
+<link rel="stylesheet"  type="text/css" href="https://fonts.googleapis.com/css?family=SourceSansPro-Semibold" />
 <link rel="pingback" href="<?php bloginfo('pingback_url'); ?>">
-<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&subset=latin,vietnamese' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&subset=latin,vietnamese' rel='stylesheet' type='text/css'>
 <?php if ( is_singular() ) wp_enqueue_script('comment-reply'); ?>
 <?php wp_head(); ?>
 <style type="text/css">
@@ -146,9 +146,9 @@ document.onclick=reEnable
       <?php wp_nav_menu(array('name' => 'PC Menu', 'container' => '', 'menu_class' => 'srow mainmenu', 'menu_id' => 'menu-main-menu', 'theme_location' => 'main_nav')); ?>
       <div class="cart mainmenu"> <span class="glyphicon menu-cart"></span>
         <ul class="cart-list">
-          <?php global $woocommerce; ?>
+          <?php global $woocommerce, $paged; ?>
           <?php $total = 0; ?>
-          <?php foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) { 
+          <?php foreach ( ( function_exists('WC') && WC()->cart ? WC()->cart->get_cart() : array() ) as $cart_item_key => $cart_item ) { 
 
                                 echo '<li>';
 
@@ -174,7 +174,7 @@ document.onclick=reEnable
 
                                 echo $price;
 
-                                $total += $price;
+                                // Cart totals are calculated by WooCommerce below.
 
                                 echo '</li>';
 
@@ -185,7 +185,7 @@ document.onclick=reEnable
             <div class="control-group">
               <div class="controls">
                 <label>T&#7893;ng s&#7889; ti&#7873;n</label>
-                <p><?php echo wc_cart_totals_order_total_html(); ?></p>
+                <p><?php if ( function_exists('WC') && WC()->cart ) { wc_cart_totals_order_total_html(); } ?></p>
               </div>
             </div>
             <div class="clearfix"></div>

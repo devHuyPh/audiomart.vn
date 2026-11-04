@@ -1,34 +1,63 @@
 <?php
 
-namespace Elementor\Modules\AtomicWidgets\PropTypes;
+if (!defined('ABSPATH')) die('No direct access.');
 
-use Elementor\Modules\AtomicWidgets\PropTypes\Base\Object_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+/**
+ * Responsive Slider specific markup, javascript, css and settings.
+ */
+class MetaResponsiveSlider extends MetaSlider {
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+    protected $js_function = 'responsiveSlides';
+    protected $js_path = 'sliders/responsiveslides/responsiveslides.min.js';
+    protected $css_path = 'sliders/responsiveslides/responsiveslides.css';
 
-class Dimensions_Prop_Type extends Object_Prop_Type {
-	public static function get_key(): string {
-		return 'dimensions';
-	}
+    /**
+     * Detect whether thie slide supports the requested setting,
+     * and if so, the name to use for the setting in the Javascript parameters
+     *
+     * @param  array $param Parameters
+     * @return false (parameter not supported) or parameter name (parameter supported)
+     */
+    protected function get_param( $param ) {
+        $params = array(
+            'prevText' => 'prevText',
+            'nextText' => 'nextText',
+            'delay' => 'timeout',
+            'animationSpeed' => 'speed',
+            'hoverPause' => 'pause',
+            'navigation' => 'pager',
+            'links' =>'nav',
+            'autoPlay' => 'auto'
+        );
 
-	protected function define_shape(): array {
-		return [
-			'block-start' => Union_Prop_Type::make()
-				->add_prop_type( Size_Prop_Type::make() )
-				->add_prop_type( String_Prop_Type::make()->enum( [ 'auto' ] ) ),
-			'inline-end' => Union_Prop_Type::make()
-				->add_prop_type( Size_Prop_Type::make() )
-				->add_prop_type( String_Prop_Type::make()->enum( [ 'auto' ] ) ),
-			'block-end' => Union_Prop_Type::make()
-				->add_prop_type( Size_Prop_Type::make() )
-				->add_prop_type( String_Prop_Type::make()->enum( [ 'auto' ] ) ),
-			'inline-start' => Union_Prop_Type::make()
-				->add_prop_type( Size_Prop_Type::make() )
-				->add_prop_type( String_Prop_Type::make()->enum( [ 'auto' ] ) ),
-		];
-	}
+        if ( isset( $params[$param] ) ) {
+            return $params[$param];
+        }
+
+        return false;
+    }
+
+    /**
+     * Build the HTML for a slider.
+     *
+     * @return string slider markup.
+     */
+    protected function get_html() {
+        $return_value = "<ul id='" . $this->get_identifier() . "' class='rslides'>";
+
+        $first = true;
+        foreach ( $this->slides as $slide ) {
+            $style = "";
+
+            if ( !$first ) {
+                $style = " style='display: none;'";
+            }
+            $return_value .= "\n            <li{$style}>" . $slide . "</li>";
+            $first = false;
+        }
+
+        $return_value .= "\n        </ul>";
+
+        return apply_filters( 'metaslider_responsive_slider_get_html', $return_value, $this->id, $this->settings );;
+    }
 }

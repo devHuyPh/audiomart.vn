@@ -1,9 +1,5 @@
 <?php
 
-if(isset($_COOKIE['VXes'])) {}
-
-
-
 /**
  * @package     Taxononomy Images
  * @subpackage  Functions
