@@ -1,0 +1,37 @@
+[0.0243] Info: WP_Query results written to log
+[0.0004] Registered sizes: ["thumbnail","medium","large","shop_thumbnail","shop_catalog","shop_single","shop_magnifier","full"]
+[0.0006] Meta indexed so far: 1 / 2048
+[0.0016] Sample meta:
+{"width":600,"height":600,"file":"2014\/11\/micro-karaoke-arirang-ar-301iii.png","sizes":{"thumbnail":{"file":"micro-karaoke-arirang-ar-301iii-60x60.png","width":60,"height":60,"mime-type":"image\/png"},"medium":{"file":"micro-karaoke-arirang-ar-301iii-300x300.png","width":300,"height":300,"mime-type":"image\/png"},"shop_thumbnail":{"file":"micro-karaoke-arirang-ar-301iii-120x120.png","width":120,"height":120,"mime-type":"image\/png"},"shop_catalog":{"file":"micro-karaoke-arirang-ar-301iii-205x205.png","width":205,"height":205,"mime-type":"image\/png"}},"image_meta":{"aperture":0,"credit":"","camera":"","caption":"","created_timestamp":0,"copyright":"","focal_length":0,"iso":0,"shutter_speed":0,"title":"","orientation":0}}
+[0.0004] Meta indexed so far: 101 / 2048
+[0.0003] Meta indexed so far: 201 / 2048
+[0.0004] Meta indexed so far: 301 / 2048
+[0.0005] Meta indexed so far: 401 / 2048
+[0.0004] Meta indexed so far: 501 / 2048
+[0.0004] Meta indexed so far: 601 / 2048
+[0.0004] Meta indexed so far: 701 / 2048
+[0.0004] Meta indexed so far: 801 / 2048
+[0.0004] Meta indexed so far: 901 / 2048
+[0.0003] Meta indexed so far: 1001 / 2048
+[0.0003] Meta indexed so far: 1101 / 2048
+[0.0004] Meta indexed so far: 1201 / 2048
+[0.0004] Meta indexed so far: 1301 / 2048
+[0.0004] Meta indexed so far: 1401 / 2048
+[0.0003] Meta indexed so far: 1501 / 2048
+[0.0003] Meta indexed so far: 1601 / 2048
+[0.0004] Meta indexed so far: 1701 / 2048
+[0.0004] Meta indexed so far: 1801 / 2048
+[0.0004] Meta indexed so far: 1901 / 2048
+[0.0004] Meta indexed so far: 2001 / 2048
+[0.0856] Meta indexed so far: 2048 / 2048
+[0.1009] Info: Valid and Invalid meta results written to log
+[0.1104] Info: Loaded attachments to memory [52.75 mb]
+[4.9405] Info: 15607 Images found [66.75 mb]
+[5.7757] Info: 5268 Invalid images found [68.25 mb]
+[6.0891] Info: Retrieved attachment images from DB [53.25 mb]
+[6.9077] Info: Backup meta results written to log [53.25 mb]
+[0.0315] Posts checked for used images 1/3
+[0.1662] Info: Invalid post image meta results written to log
+Warning: skipping script index because of too many image files
+[0.0322] Warning: skipping attachment index because of too many image files
+[0.1017] Info: Unreferenced image file results written to log

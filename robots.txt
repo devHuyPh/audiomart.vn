@@ -1,0 +1,3 @@
+User-agent: Googlebot
+disallow: /wp-admin 
+disallow: /index.php 

@@ -1,0 +1,58 @@
+
+@media all and (min-width: 1200px) {
+}
+
+@media all and (max-width: 1200px) {
+
+}
+
+@media all and (max-width: 1100px) {
+
+}
+@media all and (max-width: 980px) {
+.wrapper {
+	width: 97%;
+	margin:0px;
+	padding:0px 1.5%;
+}
+.main-nav .wrapper {
+	width: 100%;
+	margin:0px;
+	padding:0px;
+}
+}
+@media all and (max-width: 800px) {
+
+
+}
+
+@media all and (max-width: 768px) {
+.p-content{
+	float: right;
+	width: 97%;
+	margin: 0px 1.5%;
+}
+}
+
+@media all and (max-width: 640px) {
+
+}
+
+@media all and (max-width: 480px) {
+
+}
+
+@media all and (max-width: 420px) {
+
+}
+
+@media all and (max-width: 360px) {
+
+
+}
+@media all and (max-width: 320px) {
+
+}
+@media screen and (min-width:0\0) {
+	
+}
